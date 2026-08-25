@@ -1,0 +1,25 @@
+# ── 敏感配置：禁止提交真实凭据 ──
+config.json
+.license_state.json
+
+# ── 运行时数据 / 日志 ──
+logs/
+data/
+updates/
+media/
+*.log
+
+# ── Python ──
+__pycache__/
+*.pyc
+*.pyo
+
+# ── bot-forward 依赖 ──
+bot-forward/node_modules/
+bot-forward/data/
+
+# ── 系统 / 编辑器 ──
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

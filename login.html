@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>登录 · 元宝Bot插件满血v7.6 Release Preview</title>
+<style>
+:root{
+    --bg-1:#0b0f19;--bg-2:#1a1f2e;--glass-bg:rgba(255,255,255,.06);
+    --glass-edge:rgba(255,255,255,.12);--glass-shine:rgba(255,255,255,.08);
+    --primary:#6366f1;--primary-2:#8b5cf6;--accent:#ec4899;--accent-2:#f59e0b;
+    --text:#e5e7eb;--text-muted:#9ca3af;--text-dim:#6b7280;
+    --danger:#ef4444;--success:#10b981;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:linear-gradient(135deg,var(--bg-1) 0%,var(--bg-2) 60%,var(--bg-1) 100%);
+    color:var(--text);display:flex;align-items:center;justify-content:center;
+    position:relative;
+}
+body::before{
+    content:"";position:absolute;inset:0;
+    background:
+        radial-gradient(circle at 20% 30%,rgba(99,102,241,.18),transparent 40%),
+        radial-gradient(circle at 80% 70%,rgba(236,72,153,.12),transparent 40%);
+    pointer-events:none;
+}
+.login-wrap{
+    width:min(420px,92vw);padding:36px 32px 28px;
+    background:var(--glass-bg);backdrop-filter:blur(24px) saturate(1.5);
+    -webkit-backdrop-filter:blur(24px) saturate(1.5);
+    border:1px solid var(--glass-edge);border-radius:18px;
+    box-shadow:0 20px 60px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06);
+    position:relative;z-index:1;animation:rise .5s cubic-bezier(.22,1,.36,1);
+}
+@keyframes rise{from{opacity:0;transform:translateY(20px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+.brand{text-align:center;margin-bottom:24px}
+.logo{
+    width:64px;height:64px;margin:0 auto 12px;
+    background:linear-gradient(135deg,var(--primary),var(--accent));
+    border-radius:18px;display:flex;align-items:center;justify-content:center;
+    font-size:32px;font-weight:700;color:#fff;
+    box-shadow:0 10px 30px rgba(99,102,241,.45),inset 0 1px 0 rgba(255,255,255,.2);
+}
+.brand h1{font-size:18px;font-weight:600;letter-spacing:-.2px;margin-bottom:4px}
+.brand p{font-size:12px;color:var(--text-muted)}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px;font-weight:500}
+.form-input{
+    width:100%;padding:12px 14px;font-size:14px;color:var(--text);
+    background:rgba(0,0,0,.25);border:1px solid var(--glass-edge);
+    border-radius:10px;outline:none;
+    transition:border-color .2s,background .2s;
+    font-family:inherit;
+}
+.form-input:focus{border-color:var(--primary);background:rgba(0,0,0,.35)}
+.form-input::placeholder{color:var(--text-dim)}
+.btn-login{
+    width:100%;padding:13px;margin-top:6px;
+    background:linear-gradient(135deg,var(--primary),var(--primary-2));
+    color:#fff;border:none;border-radius:10px;
+    font-size:14px;font-weight:600;cursor:pointer;
+    transition:transform .15s,box-shadow .2s,opacity .2s;
+    box-shadow:0 6px 18px rgba(99,102,241,.4);
+    letter-spacing:.5px;
+}
+.btn-login:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 24px rgba(99,102,241,.5)}
+.btn-login:active:not(:disabled){transform:translateY(0)}
+.btn-login:disabled{opacity:.55;cursor:not-allowed}
+.error-tip{
+    margin-top:12px;padding:10px 12px;border-radius:8px;
+    background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);
+    color:#fca5a5;font-size:12.5px;display:none;text-align:center;
+    animation:shake .35s;
+}
+.error-tip.show{display:block}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.foot{
+    text-align:center;margin-top:18px;padding-top:14px;
+    border-top:1px solid var(--glass-edge);
+    font-size:11px;color:var(--text-dim);line-height:1.6;
+}
+.foot a{color:var(--text-muted);text-decoration:none}
+.foot a:hover{color:var(--text)}
+.kbd-hint{
+    position:absolute;right:-6px;top:50%;transform:translateY(-50%);
+    font-size:10px;color:var(--text-dim);background:rgba(0,0,0,.3);
+    padding:2px 6px;border-radius:4px;border:1px solid var(--glass-edge);
+    pointer-events:none;opacity:0;transition:opacity .2s;
+}
+.form-input:not(:placeholder-shown) ~ .kbd-hint{opacity:.7}
+.pwd-wrap{position:relative}
+.toggle-pwd{
+    position:absolute;right:10px;top:50%;transform:translateY(-50%);
+    background:none;border:none;color:var(--text-muted);cursor:pointer;
+    font-size:14px;padding:4px 6px;border-radius:6px;
+}
+.toggle-pwd:hover{color:var(--text);background:rgba(255,255,255,.06)}
+</style>
+</head>
+<body>
+<div class="login-wrap">
+    <div class="brand">
+        <div class="logo">元</div>
+        <h1>元宝Bot插件</h1>
+        <p>满血v7.6 Release Preview · 请输入访问密码</p>
+    </div>
+
+    <form id="loginForm" autocomplete="on" novalidate>
+        <div class="form-group">
+            <label for="password">访问密码</label>
+            <div class="pwd-wrap">
+                <input id="password" name="password" type="password"
+                       class="form-input" placeholder="请输入访问密码"
+                       autocomplete="current-password" required autofocus
+                       minlength="6" maxlength="64">
+                <button type="button" class="toggle-pwd" id="togglePwd" title="显示/隐藏密码">👁</button>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-login" id="btnLogin">🔐 登录</button>
+
+        <div class="error-tip" id="errorTip">访问密码错误，请重试</div>
+    </form>
+
+    <div class="foot">
+        <div>元宝派 Bot Web 控制台 · {% if edition == 'internal_beta' %}内部测试版{% elif edition == 'free' %}全功能脱敏版{% elif edition == 'advanced' %}高级版{% elif edition == 'ultimate' %}旗舰版{% else %}正式版{% endif %}</div>
+        <div style="margin-top:2px">登录会话 12 小时有效</div>
+    </div>
+</div>
+
+<script>
+const form = document.getElementById('loginForm');
+const pwdInput = document.getElementById('password');
+const btn = document.getElementById('btnLogin');
+const errTip = document.getElementById('errorTip');
+const togglePwd = document.getElementById('togglePwd');
+
+togglePwd.addEventListener('click', () => {
+    if (pwdInput.type === 'password') { pwdInput.type = 'text'; togglePwd.textContent = '🙈'; }
+    else { pwdInput.type = 'password'; togglePwd.textContent = '👁'; }
+});
+
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errTip.classList.remove('show');
+    const pwd = pwdInput.value.trim();
+    if (!pwd) {
+        errTip.textContent = '请输入密码';
+        errTip.classList.add('show');
+        return;
+    }
+    btn.disabled = true;
+    btn.textContent = '登录中...';
+    try {
+        const r = await fetch('/api/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({password: pwd}),
+            credentials: 'same-origin'
+        });
+        const data = await r.json();
+        if (r.ok && data.ok) {
+            btn.textContent = '✅ 登录成功';
+            setTimeout(() => { window.location.href = '/'; }, 250);
+        } else {
+            errTip.textContent = data.msg || data.error || '访问密码错误，请重试';
+            errTip.classList.add('show');
+            pwdInput.select();
+            btn.disabled = false;
+            btn.textContent = '🔐 登录';
+        }
+    } catch (e) {
+        errTip.textContent = '网络错误：' + e.message;
+        errTip.classList.add('show');
+        btn.disabled = false;
+        btn.textContent = '🔐 登录';
+    }
+});
+
+pwdInput.addEventListener('input', () => errTip.classList.remove('show'));
+</script>
+</body>
+</html>
